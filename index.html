@@ -201,37 +201,42 @@
       }
     }
 
-    /* Tombol Reset Icon Refresh */
+    /* Tombol Reset Sederhana berupa Teks di Pojok Kanan Atas */
     .reset-btn {
       position: absolute;
       top: 25px;
       right: 25px;
       z-index: 20;
-      background-color: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(4px);
-      color: #334155;
-      border: 2px solid rgba(255, 255, 255, 0.6);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
+      background: none;
+      border: none;
+      color: #475569;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transition: all 0.2s ease;
+      gap: 6px;
+      padding: 8px;
+      transition: color 0.2s ease, transform 0.2s ease;
+      user-select: none;
     }
 
     .reset-btn:hover {
-      background-color: #ffffff;
       color: #0f172a;
-      transform: rotate(180deg) scale(1.08);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .reset-btn .icon {
+      font-size: 1.2rem;
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .reset-btn:hover .icon {
+      transform: rotate(180deg);
     }
 
     .reset-btn:active {
-      transform: rotate(180deg) scale(0.95);
+      transform: scale(0.95);
     }
   </style>
 </head>
@@ -245,14 +250,13 @@
   <canvas id="confetti-canvas"></canvas>
   <div id="floating-emojis"></div>
 
-
   <!-- Tombol Reset Teks Simpel -->
   <button class="reset-btn" onclick="resetCounter()" title="Reset Hitungan">
     <span class="icon">🔄</span> Reset
   </button>
 
   <header>
-    <h1>Bagaimana Perasaanmu Setelah Mengikuti Pembelajaran Hari Ini?</h1>
+    <h1>Bagaimana Perasaanmu Hari Ini?</h1>
     <p class="subtitle">Sentuh atau klik emoji untuk memilih</p>
   </header>
 
