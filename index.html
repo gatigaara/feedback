@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pilih Emoticon Interaktif</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Canvas Konfeti Full Screen */
+    #confetti-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    header {
+      text-align: center;
+      z-index: 2;
+      margin-top: 20px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+    }
+
+    p.subtitle {
+      font-size: 1.2rem;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    /* Container Emoji tanpa Card/Background */
+    .emoji-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      flex-wrap: wrap;
+      z-index: 2;
+      margin: auto 0;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .emoji-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: transparent;
+      padding: 10px;
+    }
+
+    .emoji-item:hover {
+      transform: scale(1.15);
+    }
+
+    .emoji-item:active {
+      transform: scale(0.95);
+    }
+
+    .emoji-icon {
+      font-size: 110px;
+      line-height: 1.1;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    }
+
+    .emoji-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 10px;
+    }
+
+    .counter {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #2563eb;
+      margin-top: 5px;
+      transition: transform 0.15s ease;
+    }
+
+    .counter.bump {
+      transform: scale(1.4);
+      color: #16a34a;
+    }
+
+    /* Container untuk Emoji Melayang */
+    #floating-emojis {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 45px;
+      animation: floatUp 2.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.5) rotate(0deg);
+      }
+      50% {
+        opacity: 0.9;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--vx), var(--vy)) scale(1.3) rotate(var(--rot));
+      }
+    }
+
+    /* Tombol Reset */
+    .reset-btn {
+      z-index: 2;
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      transition: all 0.2s ease;
+      margin-bottom: 20px;
+    }
+
+    .reset-btn:hover {
+      background-color: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
+
+    .reset-btn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+  <div id="floating-emojis"></div>
+
+  <header>
+    <h1>Bagaimana Perasaanmu Hari Ini?</h1>
+    <p class="subtitle">Sentuh atau klik emoji untuk memilih</p>
+  </header>
+
+  <div class="emoji-container">
+    <div class="emoji-item" onclick="pilihEmoji(event, 'senang', '😊')">
+      <div class="emoji-icon">😊</div>
+      <div class="emoji-label">Senang</div>
+      <div class="counter" id="senang">0</div>
+    </div>
+
+    <div class="emoji-item" onclick="pilihEmoji(event, 'sedih', '😢')">
+      <div class="emoji-icon">😢</div>
+      <div class="emoji-label">Sedih</div>
+      <div class="counter" id="sedih">0</div>
+    </div>
+
+    <div class="emoji-item" onclick="pilihEmoji(event, 'marah', '😡')">
+      <div class="emoji-icon">😡</div>
+      <div class="emoji-label">Marah</div>
+      <div class="counter" id="marah">0</div>
+    </div>
+
+    <div class="emoji-item" onclick="pilihEmoji(event, 'semangat', '🔥')">
+      <div class="emoji-icon">🔥</div>
+      <div class="emoji-label">Semangat</div>
+      <div class="counter" id="semangat">0</div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetCounter()">Reset Hitungan</button>
+
+  <script>
+    const counts = {
+      senang: 0,
+      sedih: 0,
+      marah: 0,
+      semangat: 0
+    };
+
+    // Setup Konfeti Canvas
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Jalankan Fungsi Utama Saat Emoji Diklik
+    function pilihEmoji(event, jenis, char) {
+      // 1. Tambah Hitungan
+      counts[jenis]++;
+      const counterEl = document.getElementById(jenis);
+      counterEl.innerText = counts[jenis];
+      
+      // Animasi Angka Membesar
+      counterEl.classList.add('bump');
+      setTimeout(() => counterEl.classList.remove('bump'), 200);
+
+      // 2. Dapatkan Posisi Klik
+      const rect = event.currentTarget.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+
+      // 3. Pemicu Semburan Emoji Banyak
+      let jumlahEmoji = 18;
+      for (let i = 0; i < jumlahEmoji; i++) {
+        buatEmojiMelayang(originX, originY, char);
+      }
+
+      // 4. Pemicu Konfeti Full Layar
+      pemicuKonfeti();
+    }
+
+    // Pembuat Emoji Melayang ke Udara
+    function buatEmojiMelayang(x, y, char) {
+      const container = document.getElementById('floating-emojis');
+      const el = document.createElement('div');
+      el.className = 'floating-emoji';
+      el.innerText = char;
+
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+
+      const vx = (Math.random() - 0.5) * 500; 
+      const vy = -Math.random() * 600 - 100;  
+      const rot = (Math.random() - 0.5) * 720; 
+
+      el.style.setProperty('--vx', `${vx}px`);
+      el.style.setProperty('--vy', `${vy}px`);
+      el.style.setProperty('--rot', `${rot}deg`);
+
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.remove();
+      }, 2500);
+    }
+
+    // Sistem Konfeti Full Screen
+    function pemicuKonfeti() {
+      const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
+      
+      for (let i = 0; i < 90; i++) {
+        confettiParticles.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height + Math.random() * 20,
+          w: Math.random() * 12 + 6,
+          h: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 12,
+          vy: -(Math.random() * 14 + 10),
+          gravity: 0.25,
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+    }
+
+    function renderKonfeti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.rotation += p.vRot;
+
+        if (p.y > canvas.height - 100) {
+          p.opacity -= 0.015;
+        }
+
+        if (p.opacity <= 0 || p.y > canvas.height + 50) {
+          confettiParticles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.opacity;
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+
+      requestAnimationFrame(renderKonfeti);
+    }
+
+    renderKonfeti();
+
+    // Fungsi Reset Hitungan
+    function resetCounter() {
+      for (let jenis in counts) {
+        counts[jenis] = 0;
+        document.getElementById(jenis).innerText = 0;
+      }
+    }
+  </script>
+</body>
+</html>
